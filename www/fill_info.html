@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta charset="utf-8">
+        <meta name="format-detection" content="telephone=no" />
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <script language="javascript" type="text/javascript" src="https://code.jquery.com/jquery-2.2.2.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script>
+            $(document).bind('mobileinit',function(){
+                $.mobile.pushStateEnabled = false;
+            });
+        </script>
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    	<title>Fill Inforamtion</title>
+        
+        <script type="text/javascript">
+            function save_info()
+            {
+                var fname = $("#fname").val();
+                var lname = $("#lname").val();
+                var pa = $("#pa").val();
+                var la = $("#la").val();
+                var father_name = $("#father_name").val();
+                var mother_name = $("#mother_name").val();
+                var f_m_phone = $("#f_m_phone").val();
+                var ll_phone = $("#ll_phone").val();
+                var own_phone = $("#own_phone").val();
+                var email = $("#email").val();
+                var govt_id = $("#govt_id").val();
+                var branch = document.getElementById("select-native-1");
+                var branch_val = branch.options[branch.selectedIndex].value;
+                var role = document.getElementById("select-native-2");
+                var role_val = role.options[role.selectedIndex].value;
+                var table_name = sessionStorage.getItem('cid');
+                if($.trim(fname).length>0 & $.trim(lname).length>0 & $.trim(pa).length>0 & $.trim(la).length>0 & $.trim(father_name).length>0 & $.trim(mother_name).length>0 & $.trim(f_m_phone).length>0 & $.trim(ll_phone).length>=0 & $.trim(own_phone).length>0 & $.trim(email).length>0 & $.trim(govt_id).length>0 & $.trim(branch_val).length>0 & $.trim(role_val
+                    ).length>0 & $.trim(table_name).length>0 )
+                {
+                        $.ajax({
+                                            url: "http://k6nepal.com/hmsit_app/demo.php", data:{fname: fname, lname: lname, pa: pa, la: la, father_name: father_name, mother_name: mother_name, f_m_phone: f_m_phone, ll_phone: ll_phone,own_phone: own_phone, email: email, govt_id: govt_id, branch_val: branch_val, role: role_val,table_name : table_name}, method:"POST" 
+                                        }).done(function(isInfoSaved_flag) {
+                                                if(isInfoSaved_flag == 0) {
+                                                    alert("Account Created!");
+                                                    window.location = "index.html";
+                                                }
+                                                else
+                                                {
+                                                    alert("Unable to enter data into database, please try again!");
+                                                    alert(isInfoSaved_flag);
+                                                    window.location = "fill_info.html";
+                                                }
+                                            });
+                }
+                else
+                {
+                    alert("You have left some Inforamtion to fill!");
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <form method="post">
+                    <label>Please enter your details:- </label><br />
+                    <input type="text" name="fname" id="fname" placeholder="First Name" maxlength="25" />
+                    <input type="text" name="lname" id="lname" placeholder="Last Name" maxlength="25" />
+                    <textarea rows="10" cols="10" id="pa" placeholder="Your Parmanent Address"></textarea>
+                    <textarea rows="10" cols="10" id="la" placeholder="Your Local Address"></textarea>
+                    <input type="text" name="father_name" id="father_name" placeholder="Father's Name" />
+                    <input type="text" name="mother_name" id="mother_name" placeholder="Mother's Name" />
+                    <input type="tel" name="f_m_phone" id="f_m_phone" placeholder="Enter your parent mobile number(Any one)" />
+                    <input type="tel" name="ll_phone" id="ll_phone" placeholder="Land Line Number(If any)" />
+                    <input type="tel" name="own_phone" id="own_phone" placeholder="Enter your mobile number" />
+                    <input type="email" name="email" id="email" placeholder="Enter your E-mail address" />
+                    <input type="text" name="govt_id" id="govt_id" placeholder="Any Gorvenment ID" /> <br />
+                    <div class="ui-field-contain">
+                        <label for="select-native-1">Choose the branch:-</label>
+                            <select name="select-native-1" id="select-native-1">
+                                <option value="CE">Civil Engineering</option>
+                                <option value="CSE">Computer Science and Engineering</option>
+                                <option value="EC">Electronics and Communication</option>
+                                <option value="EE">Electrical and Eletronics</option>
+                                <option value="ME">Mechcanical Engineering</option>
+                            </select>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="select-native-2">Choose your role:-</label>
+                            <select name="select-native-1" id="select-native-2">
+                                <option value="Principal">Principal</option>
+                                <option value="HOD">HOD</option>
+                                <option value="Teacher">Teacher</option>
+                                <option value="Student">Student</option>
+                            </select>
+                    </div>
+                    <input type="button" onclick="return save_info();" value="Save My Information">
+        </form>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>

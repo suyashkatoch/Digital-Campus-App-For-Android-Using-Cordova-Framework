@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta charset="utf-8">
+        <meta name="format-detection" content="telephone=no" />
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <script language="javascript" type="text/javascript" src="https://code.jquery.com/jquery-2.2.2.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script>
+            $(document).bind('mobileinit',function(){
+                $.mobile.pushStateEnabled = false;
+            });
+        </script>
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    	<title>HMSIT Connect</title>
+		<style type="text/css">
+            body
+            {
+                background: url("img/bg.png");
+                background-position:center center;
+                background-size:100% 200%;
+            }
+            .ui-page
+            {
+                background: transparent;
+            }
+            .ui-content
+            {
+                background: transparent;
+            }
+   			#main {
+
+				margin:0 auto;
+				position:relative;
+				font-family:Arial, Helvetica, sans-serif;
+				padding:0;
+				width:85%;
+				height:470px;
+				background: #FFFDD0;         /*#f7f7eb;*/
+			}
+			#header {
+				margin:0 auto;
+                position:relative;
+                font-family:Arial, Helvetica, sans-serif;
+                padding:0;
+                width: 100%;
+				height: 25%;
+				background:#e5e564;
+			}
+            #img_of_college
+            {
+                max-width:80%;
+                max-height:80%;
+            }
+            div.ui-input-text 
+            {
+                width: 210px !important
+            }
+		</style>
+		<script type="text/javascript">
+      /*  $(document).on("pagebeforecreate",function(event){
+            $.mobile.loading("show");
+        }); 
+        $(document).on("pagecreate",function(event){
+          $.mobile.loading("hide");
+        });*/
+            /*document.addEventListener("deviceready", onDeviceReady, false);*/ 
+                (function(){
+                    var f = localStorage.getItem('session_user');
+                    var t = JSON.parse(f);
+                    if(t[0]["role"] == 'PRINCIPAL')
+                    {
+                        window.location="home_principal.html";
+                    }
+                    else if (t[0]["role"] == 'HOD')
+                    {
+                        window.location="home_hod.html";
+                    }
+                    else if (t[0]["role"] == 'TEACHER')
+                    {
+                        window.location="home_teacher.html";
+                    }
+                    else if (t[0]["role"] == "STUDENT")
+                    {
+                        window.location="home_student.html#pageone";  
+                    }
+                    else
+                    {
+                        window.location="index.html"
+                    }
+                })();
+            function create()
+            {
+                $.mobile.loading( "show", {
+                  text: "Loading..",
+                  textVisible: true,
+                  theme: "b",
+                  html: ""
+                });
+                var usn = $("#mk_cid").val();
+                var cid = usn.toUpperCase();
+                var password = $("#mk_pswd").val();
+                var re_password = $("#re_pswd").val();
+                alphaExpUSN = /[1][H][M][0-9][0-9][A-Z][A-Z][0|4][0-9][0-9]$/ 
+                alphaExpCID = /[H][M][S][I][T][0-9]{2}[A-Z]{2}[0-9]{5}$/
+                if(cid.match(alphaExpUSN) || cid.match(alphaExpCID))
+                    {
+                        if(!password.match(re_password))
+                        {
+                            $.mobile.loading( "hide");
+                            alert("Password not same!");
+                        }
+                        else
+                        {
+                            
+                            if($.trim(cid).length>0 & $.trim(password).length>0)
+                            {
+                                $.ajax({
+                                            url: "http://k6nepal.com/hmsit_app/demo.php", data:{cid_usn: cid, pswd: password}, method:"POST" 
+                                        }).done(function(isCreated_flag) {
+                                            if(isCreated_flag == "3") {
+                                                alert("Some server/database error occured, please try again!");
+                                                window.location = "index.html";
+                                            }
+                                            else if(isCreated_flag == "1") {
+                                                alert("User regitred..");
+                                                return false;
+                                            }
+                                            else if(isCreated_flag == "0") {
+                                                alert("Account already exist!");
+                                                window.location = "index.html";
+                                            }
+                                            else if(isCreated_flag == "2") {
+                                                sessionStorage.setItem('cid',cid);
+                                                window.location = "fill_info.html";
+                                                
+                                            }
+                                            });
+                            }
+                            else
+                            {
+                                $.mobile.loading( "hide");
+                                alert("Cannot leave the any of the entry empty");
+                            }
+                            
+                        }
+                    }
+                else
+                {
+                    alert("Invalid College Id/USN format");
+                }
+
+            }
+            function log_in()
+            {
+                $.mobile.loading( "show", {
+                  text: "Loading..",
+                  textVisible: true,
+                  theme: "b",
+                  html: ""
+                });
+                var usn = $("#cid").val();
+                var cid = usn.toUpperCase();
+                var password = $("#pswd").val();                    
+                
+                if($.trim(cid).length>0 & $.trim(password).length>0)
+                {
+
+                    $.ajax({
+                                url: "http://k6nepal.com/hmsit_app/demo.php", data:{cid:cid, password: password}, method:"POST"
+                            }).done(function(log_in_flag) {
+                                    if(log_in_flag=="1") {
+                                        login();
+                                    }
+                                    else
+                                    {
+                                        $.mobile.loading( "hide");
+                                        alert("Incorrect ID or password");
+                                        
+                                        window.location="index.html";
+                                    }
+                                });
+
+                    function login() {
+                        $.ajax({
+                                    url: "http://k6nepal.com/hmsit_app/demo.php", data:{success:cid}, method:"POST"
+                                }).done(function(de) {
+                                    localStorage.setItem('session_user',de);
+                                    var f = localStorage.getItem('session_user');
+                                    var t = JSON.parse(f);
+                                    if(t[0]["role"] == 'PRINCIPAL')
+                                    {
+                                        window.location="home_principal.html";
+                                    }
+                                    else if (t[0]["role"] == 'HOD')
+                                    {
+                                        window.location="home_hod.html";
+                                    }
+                                    else if (t[0]["role"] == 'TEACHER')
+                                    {
+                                        window.location="home_teacher.html";
+                                    }
+                                    else if (t[0]["role"] == "STUDENT")
+                                    {
+                                        window.location="home_student.html#pageone";  
+                                    }
+                                    else
+                                    {
+                                        alert("Error:-Could not open");
+                                        window.location="index.html"
+
+                                    }
+                                 });
+                        }
+                   }
+                   else
+                   {
+                        $.mobile.loading( "hide");
+                        alert("Please enter the id as well as password");
+
+                   }
+            }
+        </script>
+	</head>
+   	<body>
+    	<div id="main">
+  			<div id="header">
+	  			<h2><center>HMS Institute Of Technology</h2></center>
+	 			<center> <img src="img/cover_photo.jpg" id="img_of_college"><br></center>
+	  			<center><h3>Login to get access</h3></center>
+		   		<center>
+		   			<!-- <div class="app"> -->
+                        <center>
+                            <form method="post">
+                                            <input type="text" name="cid" id="cid" placeholder="College Id/USN" maxlength="14" />
+                                            <input type="password" name="pswd" id="pswd" placeholder="Password" />          
+                                            <input type="button" data-inline="true" value="Log In"  onclick="return log_in();"/>
+                            </form>
+                        </center>
+                        <center>
+                            <div data-role="main" class="ui-content">
+                                <a href="#myPopup" data-rel="popup" class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-user">Create Account</a>
+                                <div data-role="popup" id="myPopup" class="ui-content" style="min-width:250px;">
+                                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+                                    <form method="post">
+                                            <center><h3>Enter your information</h3></center>
+                                            <center>
+                                                <input type="text" name="mk_cid" id="mk_cid" maxlength="14" placeholder="College ID/ USN" />
+                                                <input type="password" name="mk_pswd" id="mk_pswd" placeholder="Password" />
+                                                <input type="password" name="re_pswd" id="re_pswd" placeholder="Re-enter Password" />
+                                                <input type="button" data-inline="true" value="Create"  onclick="return create();"/>
+                                            </center>
+                                    </form>
+                                </div>
+                            </div>
+                        </center>
+                    <!-- </div> -->
+                </center>
+            <div>
+		</div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+	</body>
+</html>

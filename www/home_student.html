@@ -1,0 +1,628 @@
+<html>
+<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script language="javascript" type="text/javascript" src="https://code.jquery.com/jquery-2.2.2.js"></script>
+        <script language="javascript" type="text/javascript" src="js/qrcode.min.js"></script>    
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+        
+        <script>
+            $(document).bind('mobileinit',function(){
+                $.mobile.pushStateEnabled = false;
+            });
+        </script>
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript"  language="javascript">
+
+            function Refresh_data()
+                    {
+                        
+                        var f = localStorage.getItem('session_user');
+                        var t = JSON.parse(f);
+                        var rRole = t[0]['role'];
+                        $.ajax({
+                                    url:"http://www.k6nepal.com/hmsit_app/push.php", data:{r_role:rRole}, method:"POST"
+                        }).done(function(noti_return){
+                            if(noti_return == "0")
+                            {
+                                alert("No notification available");
+                            }
+                            else
+                            {
+                                localStorage.setItem('noti_return_value',noti_return);
+                                var f = localStorage.getItem('noti_return_value');
+                                var t = JSON.parse(f);
+                                var count = Object.keys(t).length;
+                                var s_name = [];
+                                var s_role = [];
+                                var msg = [];
+                                var date = [];
+                                var time = [];
+                                var file = [];
+                                for(var i=0; i < count; i++)
+                                {
+                                    s_name[i] = t[i]["s_name"];
+                                    s_role[i] = t[i]["s_role"];
+                                    msg[i] = t[i]["msg"];
+                                    date[i] = t[i]["date"];
+                                    time[i] = t[i]["time"];
+                                    file[i] = t[i]["file"];
+                                }
+                                var htmlString = "<table border='1' style='border-spacing: 1px;border-color: #FFFFFF;' id='show'><tr><th style='background-color: #4CAF50;color: white;'>From whom</th><th style='background-color: #4CAF50;color: white;'>File(If any)</th><th style='background-color: #4CAF50;color: white;'>Message</th><th style='background-color: #4CAF50;color: white;'>Date</th><th style='background-color: #4CAF50;color: white;'>Time</th></tr>";
+                                for(var i=0; i < count; i++)
+                                {
+                                    htmlString += "<tr>";
+                                    
+                                    htmlString += "<td style='vertical-align: center;text-align: center;'>"+s_role[i]+"</td>";
+                                    htmlString += "<td style='vertical-align: center;text-align: center;'>"+file[i]+"</td>";
+                                    htmlString += "<td style='vertical-align: center;text-align: center;'>"+msg[i]+"</td>";
+                                    htmlString += "<td style='vertical-align: center;text-align: center;'>"+date[i]+"</td>";
+                                    htmlString += "<td style='vertical-align: center;text-align: center;'>"+time[i]+"</td>";
+                                    htmlString += "</tr>";
+                                }
+                                htmlString += "</table>";
+                                document.getElementById("new_notification_pannel").innerHTML = htmlString; 
+                            }
+                        });
+                    }
+            function sendTo()
+            {
+                var subject = $("#subject").val();
+                var message = $("#message").val();
+                var toWhome_send_the_complain = $('input[name=toWhom]:checked').val();
+
+                if (subject === '' || message === '' || toWhome_send_the_complain === '' || toWhome_send_the_complain == null || toWhome_send_the_complain == 'undefined')       
+                {
+                    alert("Cannot leave any field empty, please enter all detail!! ");
+                    return;
+                }
+                var f = localStorage.getItem('session_user');
+                var t = JSON.parse(f);
+                var s_name = t[0]['name'];
+                var s_branch = t[0]['dept'];
+                var s_id = t[0]['cid'];
+                var s_role = t[0]['role'];
+
+                $.ajax({
+                    url:"http:www.k6nepal.com/hmsit_app/message.php",data:{sname:s_name,sid:s_id,sbranch:s_branch,srole:s_role,subject:subject,message:message,toWhom:toWhome_send_the_complain},method:"POST"
+                }).done(function(message_sent){
+                    if(message_sent == "1")
+                    {
+                        alert("Your complain(or request) has been send to "+toWhome_send_the_complain);
+                        window.location = "home_student.html";
+                    }
+                    else
+                    {
+                        alert("An error occure, please try again!");
+                    }
+
+                });
+
+            }
+            
+            function Generate()
+            {
+                $.mobile.loading( "show", {
+                      text: "Loading..",
+                      textVisible: true,
+                      theme: "b",
+                      html: ""
+                    });
+                var f = localStorage.getItem('session_user');
+                var t = JSON.parse(f);
+                var colg_id = t[0]["cid"];
+                $.ajax({
+                                url: "http://k6nepal.com/hmsit_app/demo.php", data:{colg_id:colg_id}, method:"POST"
+                                }).done(function(QRCode_data_flag) {
+                                        if(QRCode_data_flag == "1")
+                                        {
+                                                var f = localStorage.getItem('session_user');
+                                                var t = JSON.parse(f);
+                                                var name_no_due = t[0]['name'];
+                                                var cid_no_due = "("+t[0]['cid']+") has no-due"; 
+                                                var no_due = name_no_due.concat(cid_no_due);
+                                                /*alert(no_due);*/
+                                                $("#qrcode").empty();
+                                                    var qrcode = new QRCode("qrcode");    
+                                                    var TBCode = no_due;    
+                                                  if (!TBCode)
+                                                  {    
+                                                    alert("Error occured please try again!");   
+                                                    return;    
+                                                  }    
+                                                qrcode.makeCode(TBCode);
+                                                var text = "Issued On:- ".bold();
+                                                document.getElementById("issued_on").innerHTML = text;
+                                                var date = new Date();
+                                                document.getElementById("date").innerHTML = date;
+                                                $.mobile.loading( "hide");
+                                        }
+                                        else
+                                        {
+                                            var f = localStorage.getItem('session_user');
+                                            var t = JSON.parse(f);
+                                            /*alert(t[0]['colg_fee']);
+                                            var name_cid_due = t[0]['name']+"("+t[0]['cid']+") has due in";
+                                            if(t[0]['colg_fee'] < '50000.00' || t[0]['hostel_fee'] < '15000.00' || t[0]['transport_fee'] < '5000.00')
+                                            {
+                                                    if(t[0]['colg_fee'] < '50000.00' && t[0]['hostel_fee'] < '15000.00')
+                                                    {
+                                                        var due_name = " College Fee and Hostel Fee.";
+
+                                                    }
+                                                    else if(t[0]['hostel_fee'] < '15000.00' && t[0]['transport_fee'] < '5000.00')
+                                                    {
+                                                        var due_name = " College Fee and Transport Fee.";
+                                                    }
+                                                    else if(t[0]['colg_fee'] < '50000.00' && t[0]['transport_fee'] < '5000.00')
+                                                    {
+                                                        var due_name = " College Fee and Transport Fee.";
+                                                    }
+                                                    else if(t[0]['colg_fee'] < '50000.00')
+                                                    {
+                                                        var due_name = "College Fee."
+                                                    }
+                                                    else if(t[0]['hostel_fee'] < '15000.00')
+                                                    {
+                                                        var due_name = "Hostel Fee."
+                                                    }
+                                                    else if(t[0]['transport_fee'] < '5000.00')
+                                                    {
+                                                        var due_name = "Transport Fee."
+                                                    }
+                                                    else if(t[0]['colg_fee'] < '50000.00' && t[0]['hostel_fee'] < '15000.00' && t[0]['transport_fee'] < '5000.00')
+                                                    {
+                                                        var due_name = " College Fee, Hostel Fee and Transport Fee.";
+                                                    }
+                                            }
+                                            var due_in = name_cid_due + due_name; /*.concat(due_name);*/
+                                            /*var name = name_with_due.concat(" has due in ");*/
+                                            var name = t[0]['name'];
+                                            var cid = t[0]['cid'];
+                                            var due_in = name + "("+cid+") has due.";
+                                            document.getElementById("qrcode").innerHTML = due_in;
+                                            $.mobile.loading( "hide");  
+                                            
+                                        }
+                                    });
+            }
+
+        function my_marks()
+        {
+            $.mobile.loading( "show", {
+                  text: "Loading..",
+                  textVisible: true,
+                  theme: "b",
+                  html: ""
+                });
+            var f = localStorage.getItem('session_user');
+            var t = JSON.parse(f);
+            var usn = t[0]["cid"];
+            var year = "2015-2016";
+            var semester_class = document.getElementById("select-native-1");
+            var semester_class_val = semester_class.options[semester_class.selectedIndex].value;
+            
+            if(semester_class_val == "Choose semester")
+            {
+                $.mobile.loading( "hide");
+                alert("Please choose the semester");
+            }
+            else
+            {
+                $.ajax({
+                        url: "http://k6nepal.com/hmsit_app/demo.php", data:{my_usn:usn,year:year,sem_val:semester_class_val}, method:"POST"
+                }).done(function(mm) {
+                    if(mm == "null")
+                    {
+                        $.mobile.loading( "hide");
+                        alert("Cannot see this semester marks!");
+                    }
+                    else
+                    {
+                        localStorage.setItem("my_marks",mm);
+                        var f = localStorage.getItem('my_marks');
+                        var t = JSON.parse(f);
+                        var count = Object.keys(t).length;
+                        var subject = [];
+                        var t1 = [];
+                        var t2 = [];
+                        var t3 = [];
+                        for(var i=0 ; i < count; i++)
+                        {
+                            subject[i] = t[i]["sub_name"];
+                            t1[i] = t[i]["t1"];
+                            t2[i] = t[i]["t2"];
+                            t3[i] = t[i]["t3"];
+                        }
+                        var htmlString = "<table border='1'><tr><th>Subject</th><th>Marks 1</th><th>Marks 2</th><th>Marks 3</th></tr>";
+                                for(var i=0 ; i < count; i++)
+                                {
+                                    htmlString  += "<tr>"
+                                    htmlString  += "<td>" + subject[i] + "</td>";
+                                    htmlString  += "<td>"+ t1[i] +"</td>";
+                                    htmlString  += "<td>"+ t2[i] +"</td>";
+                                    htmlString  += "<td>"+ t3[i] +"</td>";       
+                                    htmlString  += "</tr>"
+                                }
+                                 htmlString += "</table>";
+                                document.getElementById("student_marks").innerHTML = htmlString;
+                                $.mobile.loading( "hide");
+                    }
+                });
+            }
+        }
+
+
+        function search_book()
+            {
+                $.mobile.loading( "show", {
+                  text: "Loading..",
+                  textVisible: true,
+                  theme: "b",
+                  html: ""
+                });
+                var search_libraby=$("#search_libraby").val();                   
+                if($.trim(search_libraby).length>0)
+                    {
+                        $.ajax({
+                                    url: "http://k6nepal.com/hmsit_app/demo.php", data:{search_libraby_key:search_libraby}, method:"POST"
+                                }).done(function(found_flag) {
+                                    if(found_flag=="1")
+                                    {
+                                        display_libraby_search();
+                                    }
+                                    else
+                                    {
+                                        $.mobile.loading( "hide");
+                                        alert("No such book found.");
+                                        window.location="home_student.html#pagethree";
+                                    }
+                                });
+
+                        function display_libraby_search(){
+                        $.ajax({
+                                    url: "http://k6nepal.com/hmsit_app/demo.php", data:{libraby_search_key:search_libraby}, method:"POST"
+                                }).done(function(ls) {
+                                    localStorage.setItem('libraby_search',ls);
+                                    var f = localStorage.getItem('libraby_search');
+                                    var t = JSON.parse(f);
+                                    var count = Object.keys(t).length;
+                                    var book_name = [];
+                                    var ISBN = [];
+                                    var author1 = [];
+                                    var author2 = [];
+                                    var author3 = [];
+                                    var author4 = [];
+                                    var publisher = [];
+                                    var edition = [];
+                                    var book_left = [];
+                                    for(var i=0 ; i < count; i++)
+                                    {
+                                        book_name[i] = t[i]["book_name"];
+                                        ISBN[i] = t[i]["isbn"];
+                                        author1[i] = t[i]["author1"];
+                                        author2[i] = t[i]["author2"];
+                                        author3[i] = t[i]["author3"];
+                                        author4[i] = t[i]["author4"];
+                                        publisher[i] = t[i]["publisher"];
+                                        edition[i] = t[i]["edition"];
+                                        book_left[i] = t[i]["book_left"]
+                                    }
+
+                                    var htmlString = "<table border='1'><tr><th>Book Name</th><th>Author(s)</th><th>Edition</th><th>Book Left</th></tr>";
+                                    for(var i=0 ; i < count; i++)
+                                    {
+                                        htmlString  += "<tr>"
+                                        htmlString  += "<td>" + book_name[i] + "</td>";
+                                        htmlString  += "<td>" + author1[i] + ",<br />" + author2[i] + ",<br /> " + author3[i] + ",<br /> " + author4[i] + "</td>";
+                                        htmlString  += "<td>" + edition[i] + "</td>";
+                                        htmlString  += "<td>" + book_left[i] + "</td>";
+                                         
+                                        htmlString  += "</tr>"
+                                    }
+                                     htmlString += "</table>";
+
+                                     document.getElementById("display_search").innerHTML = htmlString;
+                                    $.mobile.loading( "hide");
+                                 });
+                        }
+
+                    }
+                else
+                {
+                    $.mobile.loading( "hide");
+                    alert("Enter somthing if you want to search!")
+                }
+        }
+        function my_books()
+        {
+            $.mobile.loading( "show", {
+                  text: "Loading..",
+                  textVisible: true,
+                  theme: "b",
+                  html: ""
+                });
+            var f = localStorage.getItem('session_user');
+            var t = JSON.parse(f);
+            var colg_id = t[0]["cid"];
+               $.ajax({
+                            url: "http://k6nepal.com/hmsit_app/demo.php", data:{cid_mybooks:colg_id}, method:"POST"
+                            }).done(function(my_books_flag) {
+                                if(my_books_flag=="1")
+                                {
+                                    display_my_libraby_books();
+                                }
+                                else
+                                {
+                                    $.mobile.loading( "hide");
+                                    alert("No book(s) found.");
+                                    window.location="home_student.html#pagethree";
+                                }
+                            });
+                        function display_my_libraby_books(){
+                        $.ajax({
+                                    url: "http://k6nepal.com/hmsit_app/demo.php", data:{myBooksearch_key:colg_id}, method:"POST"
+                                }).done(function(lb) {
+                                    
+                                    localStorage.setItem('my_libraby_books',lb);
+                                    var f = localStorage.getItem('my_libraby_books');
+                                    var t = JSON.parse(f);
+                                    var book_name1 = t[0]["book1"];
+                                    var ISBN1 = t[0]["ISBN1"];
+                                    var book_name2 = t[0]["book_name2"];
+                                    var ISBN2 = t[0]["ISBN2"];
+                                    var book_name3 = t[0]["book_name3"];
+                                    var ISBN3 = t[0]["ISBN3"];
+                                    var book1_issueDate = t[0]["book1_issueDate"];
+                                    var book2_issueDate = t[0]["book2_issueDate"];
+                                    var book3_issueDate = t[0]["book3_issueDate"];
+                                    var book1_lastDate = t[0]["book1_lastDate"];
+                                    var book2_lastDate = t[0]["book2_lastDate"];
+                                    var book3_lastDate = t[0]["book3_lastDate"];
+                                    if(typeof(book_name1) !== "undefined" && typeof(book_name2) !== "undefined" && typeof(book_name3) !== "undefined")
+                                    {
+
+                                        var htmlString = "<table border='1'><tr><th>Book(s) Name</th><th>Issued On</th><th>Last Date</th></tr>";
+
+                                            htmlString  += "<tr>"
+                                            htmlString  += "<td>" + book_name1 + "</td>";
+                                            htmlString  += "<td>" + book1_issueDate + "</td>";
+                                            htmlString  += "<td>" + book1_lastDate + "</td>";
+                                            htmlString  += "</tr>";
+
+                                            htmlString  += "<tr>"
+                                            htmlString  += "<td>" + book_name2 + "</td>";
+                                            htmlString  += "<td>" + book2_issueDate + "</td>";
+                                            htmlString  += "<td>" + book2_lastDate + "</td>";
+                                            htmlString  += "</tr>";
+
+                                            htmlString  += "<tr>"
+                                            htmlString  += "<td>" + book_name3 + "</td>";
+                                            htmlString  += "<td>" + book3_issueDate + "</td>";
+                                            htmlString  += "<td>" + book3_lastDate + "</td>";
+                                            htmlString  += "</tr>";
+                            
+                                         htmlString += "</table>";
+                                         document.getElementById("display_search").innerHTML = htmlString;
+                                     }
+                                     else if(typeof(book_name1) !== "undefined" && typeof(book_name2) !== "undefined" && typeof(book_name3) == "undefined")
+                                    {
+
+                                        var htmlString = "<table border='1'><tr><th>Book(s) Name</th><th>Issued On</th><th>Last Date</th></tr>";
+
+                                            htmlString  += "<tr>"
+                                            htmlString  += "<td>" + book_name1 + "</td>";
+                                            htmlString  += "<td>" + book1_issueDate + "</td>";
+                                            htmlString  += "<td>" + book1_lastDate + "</td>";
+                                            htmlString  += "</tr>";
+
+                                            htmlString  += "<tr>"
+                                            htmlString  += "<td>" + book_name2 + "</td>";
+                                            htmlString  += "<td>" + book2_issueDate + "</td>";
+                                            htmlString  += "<td>" + book2_lastDate + "</td>";
+                                            htmlString  += "</tr>";
+                            
+                                         htmlString += "</table>";
+                                         document.getElementById("display_search").innerHTML = htmlString;
+                                     }
+                                     else if(typeof(book_name1) !== "undefined" && typeof(book_name2) == "undefined" && typeof(book_name3) == "undefined")
+                                    {
+
+                                        var htmlString = "<table border='1'><tr><th>Book(s) Name</th><th>Issued On</th><th>Last Date</th></tr>";
+
+                                            htmlString  += "<tr>"
+                                            htmlString  += "<td>" + book_name1 + "</td>";
+                                            htmlString  += "<td>" + book1_issueDate + "</td>";
+                                            htmlString  += "<td>" + book1_lastDate + "</td>";
+                                            htmlString  += "</tr>";
+                            
+                                         htmlString += "</table>";
+                                         document.getElementById("display_search").innerHTML = htmlString;
+                                     }
+                                     else if(typeof(book_name1) == "undefined" && typeof(book_name2) == "undefined" && typeof(book_name3) == "undefined")
+                                    {
+                                        alert("You don't have any book issue from library!")
+                                    }
+                                    $.mobile.loading( "hide");
+                                 });
+                        }
+
+        }
+    </script>
+		<title>Home</title>
+		<style type="text/css">
+		<style>
+                input::-webkit-input-placeholder
+                {
+                        text-align:center;    
+                        color:#666;
+                        font-family:Verdana, Geneva, sans-serif;
+                }
+                textarea
+                {
+                       resize: none;
+                }
+                .new_notification_pannel
+                {
+                    background-color: #C0C0C0;
+                    width: 81%;
+                    min-height: 100px;
+                    
+                }
+                #qrcode 
+                {    
+                    width: 100%;    
+                    min-height:30px;    
+                    margin-top:15px;
+                }
+                #qr_div_bg_white
+                {
+                    background-color: #FFFFFF;
+
+                    color: #000000; 
+                }
+                table
+                {
+                    border-spacing: 5px;
+                    padding: 2px;
+                    border-color: #FFFFFF;
+                }
+                td
+                {
+                    text-align: center;
+                    
+                }
+		</style>
+</head>
+<body>
+    <!-- Home Code -->
+	<div data-role="page" id="pageone" data-theme="b">
+  		 	<div data-role="navbar">
+      			<ul>
+        			<li><a href="#" >Home</a></li>
+        			<li><a href="#pagetwo">Marks</a></li>
+        			<li><a href="#pagethree">Librbary</a></li>
+                    <li><a href="#pagefour">Application</a></li>
+                    
+      			</ul>
+    		</div>
+            <div data-role="main" class="ui-content" >
+                <center>
+                    <h5>Latest notification is:- </h5>
+                    <div id="new_notification_pannel">
+                    </div>
+                    <input type="button" onclick="return Refresh_data();" value="Refresh" />
+                    <br /><br />
+                </center>
+                <input type="button" id="qr_button" value="Generate No-Due QR Code" style="width:80%" onclick="return Generate();" /><br />
+                <center>
+                    <div id="qr_div_bg_white"><br />    
+                        <center><div id="qrcode"></div></center>
+                        <center><div id="issued_on"></div></center> 
+                        <center><div id="date"><br/></div></center>
+                    </div>
+                </center>
+            </div>
+    </div>
+
+    <!-- MarksCode -->
+    <div data-role="page" id="pagetwo" data-theme="b">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#pageone">Home</a></li>
+                    <li><a href="#">Marks</a></li>
+                    <li><a href="#pagethree">Librbry</a></li>
+                    <li><a href="#pagefour">Application</a></li>
+                </ul>
+            </div>
+            <div data-role="main" class="ui-content">
+                <label>Choose the semester and see your internal marks</label>
+                <div class="ui-field-contain">
+                    <select name="select-native-1" id="select-native-1">
+                        <option>Choose semester</option>
+                        <option value="Semester 1" >Semester 1</option>
+                        <option value="Semester 2" >Semester 2</option>
+                        <option value="Semester 3" >Semester 3</option>
+                        <option value="Semester 4" >Semester 4</option>
+                        <option value="Semester 5" >Semester 5</option>
+                        <option value="Semester 6" >Semester 6</option>
+                        <option value="Semester 7" >Semester 7</option>
+                        <option value="Semester 8" >Semester 8</option>
+                    </select>
+            </div>
+                <form method="post">
+                    <input type="button" onclick="return my_marks();" value="My Marks" />      
+            </div>
+            <center>
+                <div id="student_marks"> </div>
+            </center>
+    </div>
+
+    <!-- Libraby Code -->
+    <div data-role="page" id="pagethree" data-theme="b">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#pageone">Home</a></li>
+                    <li><a href="#pagetwo">Marks</a></li>
+                    <li><a href="#">Library</a></li>
+                    <li><a href="#pagefour">Application</a></li>
+                </ul>
+            </div>
+            <div data-role="main" class="ui-content">
+                <h1>E- Libraby</h1>
+                <form method="post">
+                    <input type="search" id="search_libraby" placeholder="Search For Books by Name or Author" />
+                    <input type="button" onclick=" return search_book();" value="Search for books" />
+                </form>
+                <br/>
+                <form method="post">
+                    <input type="button" onclick=" return my_books();" value="My Books" />
+                </form>
+                <br/ >
+                <center>
+                    <div id="display_search"><div>
+                </center>
+
+            </div>
+    </div>
+
+    <!-- Application Code -->
+    <div data-role="page" id="pagefour" data-theme="b">  
+        <div data-role="navbar">
+            <ul>
+              <li><a href="#pageone">Home</a></li>
+              <li><a href="#pagetwo">Marks</a></li>
+              <li><a href="#pagethree">Library</a></li>
+              <li><a href="#">Application</a></li>
+            </ul>
+        </div>
+
+        <div data-role="main" class="ui-content">
+          <p>Complain Letter.</p>
+          <form method="post" id="complain_form">
+            <input type="text" id="subject" placeholder="Subject of the Complain" maxlength="50" />
+            <textarea rows="500" cols="100" id="message" placeholder="Letter Content.." maxlength="300"></textarea>
+            <fieldset data-role="controlgroup">
+                <legend>Choose to whom you want to send:</legend>
+                    <input type="radio" name="toWhom" id="principal" value="Principal" />
+                        <label for="principal">Principal</label>
+                    <input type="radio" name="toWhom" id="hod" value="Hod" />
+                        <label for="hod" >HOD</label>
+            </fieldset>
+            <label>From: <script type="text/javascript">
+                                var f = localStorage.getItem('session_user');
+                                var t = JSON.parse(f);
+                                document.write(t[0]["name"]);
+                           </script>
+            </label> 
+            <!-- <a target="_blank" href="javascript:add_reminder()" style="text-decoration: none"><button>Send</button></a> -->
+            <input type="button" onclick="return sendTo();" value="Send" />
+          </form>        
+        </div>
+	</div> 
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</body>
+</html>

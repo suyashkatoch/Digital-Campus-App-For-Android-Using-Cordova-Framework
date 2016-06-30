@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <script language="javascript" type="text/javascript" src="https://code.jquery.com/jquery-2.2.2.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script>
+            $(document).bind('mobileinit',function(){
+                $.mobile.pushStateEnabled = false;
+            });
+        </script>
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <title>Home</title>
+        <script type="text/javascript">
+                    
+                    var f = localStorage.getItem('session_user');
+                    var t = JSON.parse(f);
+                    var cid = t[0]["cid"];
+                    $(function() {
+                        $('#checkbox-1, #checkbox-2').click(function() {
+                            var cb1 = $('#checkbox-1').is(':checked');
+                            var cb2 = $('#checkbox-2').is(':checked');
+                            //window.variable_name is used tp define global variable
+                            window.d11 = $('#subject_name1, #subject_code1').attr('disabled', (cb1)); 
+                            window.d12 = $('#select-native-1').attr('disabled', (cb1));
+                            window.d21 = $('#select-native-2').attr('disabled', (cb2));
+                            window.d22 = $('#subject_name2, #subject_code2').attr('disabled', (cb2));    
+                        });
+                    });
+
+                    function Refresh_data()
+                    {
+                        
+                        var f = localStorage.getItem('session_user');
+                        var t = JSON.parse(f);
+                        var rRole = t[0]['role'];
+                        $.ajax({
+                                    url:"http://www.k6nepal.com/hmsit_app/push.php", data:{r_role:rRole}, method:"POST"
+                        }).done(function(noti_return){
+                            if(noti_return == "0")
+                            {
+                                alert("No notification available");
+                            }
+                            else
+                            {
+                                localStorage.setItem('noti_return_value',noti_return);
+                                alert(noti_return);
+                                var f = localStorage.getItem('noti_return_value');
+                                var t = JSON.parse(f);
+                                var count = Object.keys(t).length;
+                                var s_name = [];
+                                var s_role = [];
+                                var msg = [];
+                                var date = [];
+                                var time = [];
+                                var file = [];
+                                for(var i=0; i < count; i++)
+                                {
+                                    s_name[i] = t[i]["s_name"];
+                                    s_role[i] = t[i]["s_role"];
+                                    msg[i] = t[i]["msg"];
+                                    date[i] = t[i]["date"];
+                                    time[i] = t[i]["time"];
+                                    file[i] = t[i]["file"];
+                                }
+                                var htmlString = "<table border='1' style='width:10px;' id='show'><tr><th>From whom</th><th>File(If any)</th><th>Message</th><th>Date</th><th>Time</th></tr>";
+                                for(var i=0; i < count; i++)
+                                {
+                                    htmlString += "<tr>";
+                                    
+                                    htmlString += "<td>"+s_role[i]+"</td>";
+                                    htmlString += "<td>"+file[i]+"</td>";
+                                    htmlString += "<td>"+msg[i]+"</td>";
+                                    htmlString += "<td>"+date[i]+"</td>";
+                                    htmlString += "<td>"+time[i]+"</td>";
+                                    htmlString += "</tr>";
+                                }
+                                htmlString += "</table>";
+                                document.getElementById("new_notification_pannel").innerHTML = htmlString; 
+                            }
+                        });
+                    }
+                    function Notification_send()
+                    {
+                        var sId =  cid;
+                        var sName =  t[0]['name'];
+                        var sRole =  t[0]['role'];
+                        var rRole =  $('input[name=toWhom]:checked').val();
+                        var file = $("#file_to_upload").val();
+                        var msg =  $("#msg").val();
+
+                        $.ajax({
+                                    url:"http://k6nepal.com/hmsit_app/push.php", data:{sid:sId,sname:sName,srole:sRole,rrole:rRole,file:file,msg:msg}, method:"POST"
+                        }).done(function(noti){
+                            if(noti == "1")
+                            {
+                                alert("Notice Sent!");
+                                window.location = "home_teacher.html";
+                            }
+                            else
+                            {
+                                alert("Error, please try again!");
+                            }
+
+                        });
+                    }
+                    function search_marks_by_teacher()
+                    {
+                        $.mobile.loading( "show", {
+                                  text: "Loading..",
+                                  textVisible: true,
+                                  theme: "b",
+                                  html: ""
+                                });
+                        var search_query_teacher = $("#search_marks").val();
+                        if($.trim(search_query_teacher).length == 0)
+                        {
+                            alert("Cannot leave the field empty!");
+                            $.mobile.loading( "hide");
+                        }
+                        var f = localStorage.getItem('session_user');
+                        var t = JSON.parse(f);
+                        var role = t[0]["role"];
+                        $.ajax({
+                                url:"http://k6nepal.com/hmsit_app/demo.php", data:{search_query_teacher:search_query_teacher, role_t: role}, method:"POST"
+                        }).done(function(show_marks){
+                            if (show_marks == "0") {
+                                alert("You are not authenticated to search outside your branch!");
+                                $.mobile.loading( "hide");
+                            }
+                            else
+                            {
+                                localStorage.setItem("marks",show_marks);
+                                var f = localStorage.getItem('marks');
+                                var t = JSON.parse(f);
+                                var count = Object.keys(t).length;
+                                var name = [];
+                                var sem = [];
+                                var subject = [];
+                                var  t1 = [];
+                                var  t2 = [];
+                                var  t3 = [];
+
+                                for(var i=0 ; i < count; i++)
+                                {
+                                    sem[i] = t[i]["sem"];
+                                    name[i] = t[i]["name"];
+                                    subject[i] = t[i]["subject"];
+                                    t1[i] = t[i]["t1"];
+                                    t2[i] = t[i]["t2"];
+                                    t3[i] = t[i]["t3"];
+                                }
+                                for(var i=0;i < count; i++)
+                                {
+                                    var htmlString = subject[i];        
+                                }
+                                var name_of_student = name[0];
+                                var current_sem = sem[0];
+                                var name_and_sem = name_of_student.concat(" of ");
+                                var name_and_sem = name_and_sem + current_sem;
+                                document.getElementById("student_name").innerHTML = name_and_sem;
+                                var htmlString = "<table border='1'><tr><th>Name</th><th>Marks 1</th><th>Marks 2</th><th>Marks 3</th></tr>";
+                                for(var i=0 ; i < count; i++)
+                                {
+                                        htmlString  += "<tr>"
+                                        htmlString  += "<td>" + subject[i] + "</td>";
+                                        htmlString  += "<td>"+ t1[i] +"</td>";
+                                        htmlString  += "<td>"+ t2[i] +"</td>";
+                                        htmlString  += "<td>"+ t3[i] +"</td>";       
+                                        htmlString  += "</tr>"
+                                }
+                                 htmlString += "</table>";
+                                document.getElementById("student_marks").innerHTML = htmlString;
+                                $.mobile.loading( "hide");
+
+                            }
+
+                        });
+                    }
+
+                    function save_class_info()
+                    {
+                        $.mobile.loading( "show", {
+                          text: "Loading..",
+                          textVisible: true,
+                          theme: "b",
+                          html: ""
+                        });
+                        var acadamic_year = $('input[name=acadamic_year]:checked').val();
+                        if(!acadamic_year)
+                        {
+                            alert("Please choose acadamic year");
+                            window.location = "home_teacher.html";
+                        }
+                        if(d11 && d12)
+                        {
+                            window.semester_class1 = document.getElementById("select-native-1");
+                            window.semester_class1_val = semester_class1.options[semester_class1.selectedIndex].value;
+                            window.subject_name1 = $('#subject_name1').val();
+                            window.subject_code1 = $('#subject_code1').val();
+                        }
+                        else
+                        {
+                            alert("Error occuer in class 1 selection!");
+                            $.mobile.loading( "hide");
+                        }
+                        if(d21 && d22)
+                        {
+                            window.semester_class2 = document.getElementById("select-native-2");
+                            window.semester_class2_val = semester_class2.options[semester_class2.selectedIndex].value;
+                            window.subject_name2 = $('#subject_name2').val();
+                            window.subject_code2 = $('#subject_code2').val();
+                        }
+                        else
+                        {
+                            alert("Error occuer in class 2 selection!");
+                            $.mobile.loading( "hide");
+                        }
+                        
+                        if($.trim(acadamic_year).length>0)
+                        {
+                            $.ajax({
+                                        url: "http://k6nepal.com/hmsit_app/demo.php", data:{teacher_cid_t:cid,acadamic_year_t:acadamic_year, semester_class1_val_t: semester_class1_val, subject_name1_t: subject_name1, subject_code1_t: subject_code1, semester_class2_val_t: semester_class2_val, subject_name2_t: subject_name2, subject_code2_t: subject_code2}, method:"POST"
+                                    }).done(function(classes_i_take_flag) {
+                                            if(classes_i_take_flag=="1") {
+                                                $.mobile.loading( "hide");
+                                                alert("Information saved");
+                                                window.location="home_teacher.html";
+                                            }
+                                            else
+                                            {
+                                                $.mobile.loading( "hide");
+                                                alert(classes_i_take_flag);
+                                                alert("Cannot put class information data, please try again.");
+                                                window.location="home_teacher.html";
+                                            }
+                                        });
+                        }
+                        else
+                        {
+                            $.mobile.loading( "hide");
+                            alert("Some error.. ");
+                            window.location = "home_teacher.html";
+                        }
+                    }
+                    function enter_student_info()
+                    {
+                        $.mobile.loading( "show", {
+                              text: "Loading..",
+                              textVisible: true,
+                              theme: "b",
+                              html: ""
+                            });
+                        var usn = $("#usn").val();
+                        var name = $("#name").val();
+                        semester_class = document.getElementById("select-native-3");
+                        semester_class_val = semester_class.options[semester_class.selectedIndex].value;
+                        var f = localStorage.getItem('session_user');
+                        var t = JSON.parse(f);
+                        var cid = t[0]["cid"];
+                        if($.trim(usn).length>0 & $.trim(name).length>0 & $.trim(semester_class).length>0)
+                        {
+                            $.ajax({
+                                    url:"http://k6nepal.com/hmsit_app/demo.php", data:{usn:usn,name:name,cid_teacher:cid,semester_class:semester_class_val}, method:"POST"
+                                }).done(function(student_info_flag){
+                                if(student_info_flag == "1")
+                                {
+                                    $.mobile.loading( "hide");
+                                    alert("Successfully Add");
+                                }
+                                else
+                                {
+                                    $.mobile.loading( "hide");
+                                    alert("Cannot save the information, please check your information and try again!");
+                                    window.location = "home_teacher.html";
+                                }
+
+                            });
+
+                        }
+                        else
+                        {
+                            $.mobile.loading( "hide");
+                            alert("Cannot left either USN or Name empty!");
+                        }
+                    }
+                    function enter_marks()
+                    {
+                        window.location = "marks_entry.html";
+                    }
+
+
+                    function scan()
+                    {
+                        cordova.plugins.barcodeScanner.scan(
+                            function (result) {
+                                if(!result.cancelled)
+                                {
+                                    if(result.format == "QR_CODE")
+                                    {
+                                        var value = result.text;
+                                        alert(value);
+                                    }
+                                }
+                            },
+                            function (error) {
+                                alert("Scanning failed: " + error);
+                            }
+                       );
+                    }
+
+                    function sendTo()
+                    {
+                        var subject = $("#subject").val();
+                        var message = $("#message").val();
+                        var toWhome_send_the_complain = $('input[name=toWhom]:checked').val();
+                        
+                        if (subject === '' || message === '' || toWhome_send_the_complain === '' || toWhome_send_the_complain == null || toWhome_send_the_complain == 'undefined')      
+                        {
+                            alert("Cannot leave any field empty, please enter all detail!! ");
+                            return;
+                        }
+                        var f = localStorage.getItem('session_user');
+                        var t = JSON.parse(f);
+                        var s_name = t[0]['name'];
+                        var s_branch = t[0]['dept'];
+                        var s_id = t[0]['cid'];
+                        var s_role = t[0]['role'];
+                        $.ajax({
+                            url:"http:www.k6nepal.com/hmsit_app/message.php",data:{sname:s_name,sid:s_id,sbranch:s_branch,srole:s_role,subject:subject,message:message,toWhom:toWhome_send_the_complain},method:"POST"
+                        }).done(function(message_sent){
+                            if(message_sent == "1")
+                            {
+                                alert("Your complain(or request) has been send to "+toWhome_send_the_complain);
+                            }
+                            else
+                            {
+                                alert("An error occure, please try again!");
+                            }
+
+                        });
+
+                    }
+                    $( document ).ready( function()
+                    {
+                        $( ".form1" ).hide();
+                        $( ".class_info" ).click( function() 
+                        {
+                            var $this = $(this);
+                            $this.toggleClass('class_info');
+                            if($this.hasClass('class_info'))
+                            {
+                                $this.text('Show Details to fill'); 
+                                $( ".form1" ).hide();        
+                            } 
+                            else 
+                            {
+                                $( ".form1" ).toggle( 'slow' );
+                                $this.text('Hide Details');
+                            }
+
+
+                        });
+                    });
+
+
+                   
+        </script>
+        <style type="text/css">
+        .new_notification_pannel
+        {
+            background-color: #C0C0C0;
+            width: 81%;
+            min-height: 100px;  
+        }
+        .round-button 
+        {
+                width:15%;
+                
+        }
+        .round-button-circle
+        {
+            width: 100%;
+            height:0;
+            padding-bottom: 100%;
+            border-radius: 50%;
+            border:0px solid #cfdcec;
+            overflow:hidden;            
+            background: #4679BD; 
+            box-shadow: 0 0 5px gray;
+        }
+        .round-button-circle:hover
+        {
+            background:#30588e;
+        }
+        .round-button a 
+        {
+            display:block;
+            float:left;
+            width:100%;
+            padding-top:50%;
+            padding-bottom:50%;
+            line-height:1em;
+            margin-top:-0.5em;        
+            text-align:center;
+            color:#e2eaf3;
+            font-family:Verdana;
+            font-size:1.2em;
+            font-weight:bold;
+            text-decoration:none;
+        }
+
+        </style>
+
+    </head>
+    <body>
+        <div data-role="tabs">
+            <div data-role="navbar">
+                <ul>
+                  <li><a href="#one" data-theme="b" data-ajax="false">Home</a></li>
+                  <li><a href="#two" data-theme="b" data-ajax="false">Class</a></li>
+                  <li><a href="#three" data-theme="b" data-ajax="false">Letter</a></li>
+                </ul>
+            </div>
+          
+            <div id="one" class="ui-content" data-theme="b"> <!-- It will inherit data-thema from it's parent,i.e above -->
+                <center>
+                    <h5>Latest notification is:- </h5>
+                    <div id="new_notification_pannel">
+                    </div>
+                    <input type="button" onclick="return Refresh_data();" value="Refresh" />
+                    <br /><br />
+                    <div class="notification_create_pannel">
+                        <label style="font-weight: bold;">Create a notice:-</label>
+                        <form method="post">
+                            <textarea rows="25" cols="25" placeholder="Notice Content..." id="msg" maxlength="200" /></textarea>
+                            <input type="hidden" name="MAX_FILE_SIZE" value="2000000">
+                            <input type="file" name="file_to_upload" id="file_to_upload" /><br />
+                            <label style="text-align: left;">Send To</label>
+                            <input type="radio" name="toWhom" id="student" value="STUDENT" />
+                                <label for="student" >Students'</label><br />
+                            <input type="button" onclick="return Notification_send();" value="Send" />
+                        </form>
+                    </div>
+                </center>
+                <br />
+                <div class="round-button">
+                    <div class="round-button-circle">
+                        <a target="_blank" href="javascript:scan();" class="round-button">B</a>
+                    </div>
+                </div>
+            </div>
+            <div id="two" class="ui-content" data-theme="b">
+                <form method="post">
+                    <input type="search" id="search_marks" placeholder="Search by USN">
+                    <input type="button" onclick="return search_marks_by_teacher();" value="Search">
+                </form>
+                <center>
+                    <div id="student_name"></div>
+                    <div id="student_marks"></div>
+                </center>
+                 <button class="class_info">Show Details to fill</button>
+                <form method="post" name="f1" class="form1">
+                    <br />
+                    <label style="font-family: verdana; font-size:12px;">Choose the acadamic year:- </label><br />
+                    <input type="radio" name="acadamic_year" id="15" value="2015-2016" />
+                        <label for="15">2015-2016</label>
+                    <input type="radio" name="acadamic_year" id="16" value="2016-2017" />
+                        <label  for="16">2016-2017</label>
+                    <h4>Class 1</h4>
+                    <label>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">You don&#39;t take class
+                    </label>
+                            <div class="ui-field-contain">
+                                <label for="select-native-1" style="font-family: verdana; font-size:12px;">Choose semester you teach:-</label>
+                                    <select name="select-native-1" id="select-native-1">
+                                        <option value="Semester 1">Semester 1</option>
+                                        <option value="Semester 2">Semester 2</option>
+                                        <option value="Semester 3">Semester 3</option>
+                                        <option value="Semester 4">Semester 4</option>
+                                        <option value="Semester 5">Semester 5</option>
+                                        <option value="Semester 6">Semester 6</option>
+                                        <option value="Semester 7">Semester 7</option>
+                                        <option value="Semester 8">Semester 8</option>
+                                    </select>
+                            </div>
+                            <input type="text" name="subject_name1" id="subject_name1" placeholder="Subject Name" />
+                            <input type="text" name="subject_code1" id="subject_code1" placeholder="Subject Code" />
+                    <h4>Class 2</h4>
+                    <label>
+                            <input type="checkbox" name="checkbox-2" id="checkbox-2">You don&#39;t take class
+                    </label>
+                            <div class="ui-field-contain">
+                                <label for="select-native-2" style="font-family: verdana; font-size:12px;">Choose semester you teach:-</label>
+                                    <select name="select-native-2" id="select-native-2" >
+                                        <option value="Semester 1">Semester 1</option>
+                                        <option value="Semester 2">Semester 2</option>
+                                        <option value="Semester 3">Semester 3</option>
+                                        <option value="Semester 4">Semester 4</option>
+                                        <option value="Semester 5">Semester 5</option>
+                                        <option value="Semester 6">Semester 6</option>
+                                        <option value="Semester 7">Semester 7</option>
+                                        <option value="Semester 8">Semester 8</option>
+                                    </select>
+                            </div>
+                            <input type="text" name="subject_name2" id="subject_name2" placeholder="Subject Name" />
+                            <input type="text" name="subject_code2" id="subject_code2" placeholder="Subject Code" />
+                    <input type="button" onclick="return save_class_info();" value="Save">
+                </form>
+                <br />
+                <br />
+                <label class="form1" style="font-family: verdana; font-size:12px;">Enter student info and choose the respected semester:-</lable>
+                <form method="post" class="form1">
+                    <input type="text" name="usn" id="usn" placeholder="USN" maxlength="10" />
+                    <input type="text" name="name" id="name" placeholder="Name" maxlength="40" />
+                    <div class="ui-field-contain">
+                                <label for="select-native-3" style="font-family: verdana; font-size:12px;">Choose semester you teach:-</label>
+                                    <select name="select-native-3" id="select-native-3" >
+                                        <option value="Semester 1">Semester 1</option>
+                                        <option value="Semester 2">Semester 2</option>
+                                        <option value="Semester 3">Semester 3</option>
+                                        <option value="Semester 4">Semester 4</option>
+                                        <option value="Semester 5">Semester 5</option>
+                                        <option value="Semester 6">Semester 6</option>
+                                        <option value="Semester 7">Semester 7</option>
+                                        <option value="Semester 8">Semester 8</option>
+                                    </select>
+                    </div>
+                    <input type="button" onclick=" return enter_student_info();" value="Enter Student List">
+                </form>
+                <br /><br /><br />
+                <form method="post" class="form1">
+                    <input type="button" onclick=" return enter_marks();" value="Enter Marks">
+                </form> 
+            </div>
+            <div id="three" class="ui-content">
+                <p>Complain Letter.</p>
+                      <form method="post" id="complain_form">
+                            <input type="text" id="subject" placeholder="Subject of the Complain" maxlength="50" />
+                            <textarea rows="5" cols="5" id="message" placeholder="Letter Content.." maxlength="300"></textarea>
+                            <fieldset data-role="controlgroup">
+                                <legend>Choose to whom you want to send:</legend>
+                                    <input type="radio" name="toWhom" id="principal" value="Principal" />
+                                        <label for="principal">Principal</label>
+                                    <input type="radio" name="toWhom" id="hod" value="Hod" />
+                                        <label for="hod" >HOD</label>
+                            </fieldset>
+                            <label>From: <script type="text/javascript">
+                                                var f = localStorage.getItem('session_user');
+                                                var t = JSON.parse(f);
+                                                document.write(t[0]["name"]);
+                                           </script>
+                            </label> 
+                            <!-- <a target="_blank" href="javascript:add_reminder()" style="text-decoration: none"><button>Send</button></a> -->
+                            <input type="button" onclick="return sendTo();" value="Send" />
+                      </form>
+            </div>
+        </div>
+        <!-- <div data-role="footer" data-position="fixed" data-tap-toggle="false" class="jqm-footer">
+            <p>jQuery Mobile Demos version <span class="jqm-version"></span></p>
+            <p>Copyright 2014 The jQuery Foundation</p>
+        </div> -->
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta charset="utf-8">
+        <meta name="format-detection" content="telephone=no" />
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <script language="javascript" type="text/javascript" src="https://code.jquery.com/jquery-2.2.2.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script>
+            $(document).bind('mobileinit',function(){
+                $.mobile.pushStateEnabled = false;
+            });
+        </script>
+        <script language="javascript" type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    	<title>Enter Marks</title>
+		<style type="text/css">
+             			
+		</style>
+		<script type="text/javascript">
+            function display_sem()
+            {
+                semester_class = document.getElementById("select-native-1");
+                semester_class_val = semester_class.options[semester_class.selectedIndex].value;
+                var f = localStorage.getItem('session_user');
+                var t = JSON.parse(f);
+                var cid = t[0]["cid"];
+                $.ajax({
+                            url:"http://k6nepal.com/hmsit_app/demo.php", data:{semester_class:semester_class_val,cid:cid}, method:"POST"
+                    }).done(function(sem_list) {
+                        if(sem_list == "0")
+                        {
+                            alert("You do not teach this semester!");
+                        }  
+                        localStorage.setItem("student_list",sem_list);
+                        var f = localStorage.getItem('student_list');
+                        var t = JSON.parse(f);
+                        var count = Object.keys(t).length;
+                        var usn = [];
+                        for(var i=0 ; i < count; i++)
+                        {
+                            usn[i] = t[i]["usn"];
+                        }
+                        var htmlString = "<table border='1'><tr><th>USN</th><th>Marks 1</th><th>Marks 2</th><th>Marks 3</th></tr>";
+                        for(var i=0 ; i < count; i++)
+                        {
+                            htmlString  += "<tr>"
+                            htmlString  += "<td>" + usn[i] + "</td>";
+                            htmlString  += "<td><input type='text' size='3' name='t1' id='t1' maxlength='2' /></td>";
+                            htmlString  += "<td><input type='text' size='3' name='t2' id='t2' maxlength='2' /></td>";
+                            htmlString  += "<td><input type='text' size='3' name='t3' id='t3' maxlength='2' /></td>";       
+                            htmlString  += "</tr>"
+                        }
+                         htmlString += "</table>";
+                         htmlString += "<input type='button' onclick='return save_marks();' value='Save Marks'>";
+                        document.getElementById("student_marks_enter").innerHTML = htmlString;
+                   });
+            }
+            function save_marks()
+            {
+                var t1 = $("#t1").val();
+                var t2 = $("#t2").val();
+                var t3 = $("#t3").val();
+                if($.trim(t1).length == 0 && $.trim(t2).length == 0 && $.trim(t3).length == 0 )
+                {
+                    alert("Cannot left all three marks entry field empty!");
+                }
+                else
+                {
+                    var semester_class = document.getElementById("select-native-1");
+                    var semester_class_val = semester_class.options[semester_class.selectedIndex].value;
+                    var f = localStorage.getItem('session_user');
+                    var t = JSON.parse(f);
+                    var cid = t[0]["cid"];
+                    $.ajax({
+                                url:"http://k6nepal.com/hmsit_app/demo.php", data:{t1:t1,t2:t2,t3:t3,semester_class_for_marks:semester_class_val,usn_student:cid}, method:"POST"
+                        }).done(function(marks_add) {        
+                            if(marks_add == "1")
+                            {
+                                alert("Record Added");
+                                window.location = "marks_entry.html";
+                            }
+                            else
+                            {
+                                alert("Cannot add marks, please try again");
+                                window.location = "marks_entry.html";
+                            }
+                    });
+                }
+            }
+        </script>
+	</head>
+   	<body>
+        <form method="post">
+            <div class="ui-field-contain">
+                <!-- <label for="select-native-1">Choose semester:-</label> -->
+                    <select name="select-native-1" id="select-native-1" onchange="return display_sem();">
+                        <option>Choose semester</option>
+                        <option value="Semester 1" >Semester 1</option>
+                        <option value="Semester 2" >Semester 2</option>
+                        <option value="Semester 3" >Semester 3</option>
+                        <option value="Semester 4" >Semester 4</option>
+                        <option value="Semester 5" >Semester 5</option>
+                        <option value="Semester 6" >Semester 6</option>
+                        <option value="Semester 7" >Semester 7</option>
+                        <option value="Semester 8" >Semester 8</option>
+                    </select>
+            </div>
+        </form>
+        <center>
+            <div id="student_marks_enter"></div>
+        </center>
+        <!-- <form method="post">
+            <input type="button" onclick="return save_marks();" value="Save Marks">
+        </form> -->
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+	</body>
+</html>
