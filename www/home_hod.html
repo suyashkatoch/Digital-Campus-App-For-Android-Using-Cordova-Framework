@@ -43,7 +43,7 @@
                         var msg =  $("#msg").val();
 
                         $.ajax({
-                                    url:"http://k6nepal.com/hmsit_app/push.php", data:{sid:sId,sname:sName,srole:sRole,rrole:rRole,file:file,msg:msg}, method:"POST"
+                                    url:"http://your_ip_orwebsite_link/server_files/demo.php", data:{sid:sId,sname:sName,srole:sRole,rrole:rRole,file:file,msg:msg}, method:"POST"
                         }).done(function(noti){
                             if(noti == "1")
                             {
@@ -64,7 +64,7 @@
                         var t = JSON.parse(f);
                         var rRole = t[0]['role'];
                         $.ajax({
-                                    url:"http://www.k6nepal.com/hmsit_app/push.php", data:{r_role:rRole}, method:"POST"
+                                    url:"http://your_ip_orwebsite_link/server_files/demo.php", data:{r_role:rRole}, method:"POST"
                         }).done(function(noti_return){
                             if(noti_return == "0")
                             {
@@ -127,7 +127,7 @@
                         var t = JSON.parse(f);
                         var role = t[0]["role"];
                         $.ajax({
-                                url:"http://www.k6nepal.com/hmsit_app/demo.php", data:{search_query_teacher:search_query_hod, role_t: role}, method:"POST"
+                                url:"http://your_ip_orwebsite_link/server_files/demo.php", data:{search_query_teacher:search_query_hod, role_t: role}, method:"POST"
                         }).done(function(show_marks){
                             if (show_marks == "0") {
                                 alert("You are not authenticated to search outside your branch!");
@@ -218,7 +218,7 @@
                         if($.trim(acadamic_year).length>0)
                         {
                             $.ajax({
-                                        url: "http://www.k6nepal.com/hmsit_app/demo.php", data:{teacher_cid_t:cid,acadamic_year_t:acadamic_year, semester_class1_val_t: semester_class1_val, subject_name1_t: subject_name1, subject_code1_t: subject_code1, semester_class2_val_t: semester_class2_val, subject_name2_t: subject_name2, subject_code2_t: subject_code2}, method:"POST"
+                                        url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{teacher_cid_t:cid,acadamic_year_t:acadamic_year, semester_class1_val_t: semester_class1_val, subject_name1_t: subject_name1, subject_code1_t: subject_code1, semester_class2_val_t: semester_class2_val, subject_name2_t: subject_name2, subject_code2_t: subject_code2}, method:"POST"
                                     }).done(function(classes_i_take_flag) {
                                             if(classes_i_take_flag=="1") {
                                                 $.mobile.loading( "hide");
@@ -252,7 +252,7 @@
                         if($.trim(usn).length>0 & $.trim(name).length>0 & $.trim(semester_class).length>0)
                         {
                             $.ajax({
-                                    url:"http://www.k6nepal.com/hmsit_app/demo.php", data:{usn:usn,name:name,cid:cid,semester_class:semester_class_val}, method:"POST"
+                                    url:"http://your_ip_orwebsite_link/server_files/demo.php", data:{usn:usn,name:name,cid:cid,semester_class:semester_class_val}, method:"POST"
                                 }).done(function(student_info_flag){
                                 if(student_info_flag == "1")
                                 {
@@ -316,7 +316,7 @@
                         var s_id = t[0]['cid'];
                         var s_role = t[0]['role'];
                         $.ajax({
-                            url:"http:www.k6nepal.com/hmsit_app/message.php",data:{sname:s_name,sid:s_id,sbranch:s_branch,srole:s_role,subject:subject,message:message,toWhom:toWhome_send_the_complain},method:"POST"
+                            url:"http://your_ip_orwebsite_link/server_files/demo.php",data:{sname:s_name,sid:s_id,sbranch:s_branch,srole:s_role,subject:subject,message:message,toWhom:toWhome_send_the_complain},method:"POST"
                         }).done(function(message_sent){
                             if(message_sent == "1")
                             {
@@ -337,7 +337,7 @@
                         var rRole = t[0]['role']; 
                         var dept = t[0]['dept'];
                         $.ajax({
-                                    url:"http://www.k6nepal.com/hmsit_app/message.php", data:{r_role:rRole,dept:dept}, method:"POST"
+                                    url:"http://your_ip_orwebsite_link/server_files/demo.php", data:{r_role:rRole,dept:dept}, method:"POST"
                         }).done(function(letter_return){
                             if(letter_return == "0")
                             {
