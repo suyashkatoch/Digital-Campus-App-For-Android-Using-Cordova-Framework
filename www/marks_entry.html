@@ -27,7 +27,7 @@
                 var t = JSON.parse(f);
                 var cid = t[0]["cid"];
                 $.ajax({
-                            url:"http://k6nepal.com/hmsit_app/demo.php", data:{semester_class:semester_class_val,cid:cid}, method:"POST"
+                            url:"http://your_ip_orwebsite_link/server_files/demo.php", data:{semester_class:semester_class_val,cid:cid}, method:"POST"
                     }).done(function(sem_list) {
                         if(sem_list == "0")
                         {
@@ -74,7 +74,7 @@
                     var t = JSON.parse(f);
                     var cid = t[0]["cid"];
                     $.ajax({
-                                url:"http://k6nepal.com/hmsit_app/demo.php", data:{t1:t1,t2:t2,t3:t3,semester_class_for_marks:semester_class_val,usn_student:cid}, method:"POST"
+                                url:"http://your_ip_orwebsite_link/server_files/demo.php", data:{t1:t1,t2:t2,t3:t3,semester_class_for_marks:semester_class_val,usn_student:cid}, method:"POST"
                         }).done(function(marks_add) {        
                             if(marks_add == "1")
                             {
