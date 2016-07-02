@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+    	<!--using url as:http://your_ip_orwebsite_link/server_files/demo.php you can repalce with your url-->
     	<meta charset="utf-8">
         <meta name="format-detection" content="telephone=no" />
     	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,13 +61,13 @@
             }
 		</style>
 		<script type="text/javascript">
-      /*  $(document).on("pagebeforecreate",function(event){
+      $(document).on("pagebeforecreate",function(event){
             $.mobile.loading("show");
         }); 
         $(document).on("pagecreate",function(event){
           $.mobile.loading("hide");
-        });*/
-            /*document.addEventListener("deviceready", onDeviceReady, false);*/ 
+        });
+            document.addEventListener("deviceready", onDeviceReady, false); 
                 (function(){
                     var f = localStorage.getItem('session_user');
                     var t = JSON.parse(f);
@@ -118,7 +119,7 @@
                             if($.trim(cid).length>0 & $.trim(password).length>0)
                             {
                                 $.ajax({
-                                            url: "http://k6nepal.com/hmsit_app/demo.php", data:{cid_usn: cid, pswd: password}, method:"POST" 
+                                            url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{cid_usn: cid, pswd: password}, method:"POST" 
                                         }).done(function(isCreated_flag) {
                                             if(isCreated_flag == "3") {
                                                 alert("Some server/database error occured, please try again!");
@@ -169,7 +170,7 @@
                 {
 
                     $.ajax({
-                                url: "http://k6nepal.com/hmsit_app/demo.php", data:{cid:cid, password: password}, method:"POST"
+                                url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{cid:cid, password: password}, method:"POST"
                             }).done(function(log_in_flag) {
                                     if(log_in_flag=="1") {
                                         login();
@@ -185,7 +186,7 @@
 
                     function login() {
                         $.ajax({
-                                    url: "http://k6nepal.com/hmsit_app/demo.php", data:{success:cid}, method:"POST"
+                                    url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{success:cid}, method:"POST"
                                 }).done(function(de) {
                                     localStorage.setItem('session_user',de);
                                     var f = localStorage.getItem('session_user');
