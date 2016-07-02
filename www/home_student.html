@@ -23,7 +23,7 @@
                         var t = JSON.parse(f);
                         var rRole = t[0]['role'];
                         $.ajax({
-                                    url:"http://www.k6nepal.com/hmsit_app/push.php", data:{r_role:rRole}, method:"POST"
+                                    url:"http://your_ip_orwebsite_link/server_files/demo.php", data:{r_role:rRole}, method:"POST"
                         }).done(function(noti_return){
                             if(noti_return == "0")
                             {
@@ -86,7 +86,7 @@
                 var s_role = t[0]['role'];
 
                 $.ajax({
-                    url:"http:www.k6nepal.com/hmsit_app/message.php",data:{sname:s_name,sid:s_id,sbranch:s_branch,srole:s_role,subject:subject,message:message,toWhom:toWhome_send_the_complain},method:"POST"
+                    url:"http://your_ip_orwebsite_link/server_files/demo.php",data:{sname:s_name,sid:s_id,sbranch:s_branch,srole:s_role,subject:subject,message:message,toWhom:toWhome_send_the_complain},method:"POST"
                 }).done(function(message_sent){
                     if(message_sent == "1")
                     {
@@ -114,7 +114,7 @@
                 var t = JSON.parse(f);
                 var colg_id = t[0]["cid"];
                 $.ajax({
-                                url: "http://k6nepal.com/hmsit_app/demo.php", data:{colg_id:colg_id}, method:"POST"
+                                url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{colg_id:colg_id}, method:"POST"
                                 }).done(function(QRCode_data_flag) {
                                         if(QRCode_data_flag == "1")
                                         {
@@ -212,7 +212,7 @@
             else
             {
                 $.ajax({
-                        url: "http://k6nepal.com/hmsit_app/demo.php", data:{my_usn:usn,year:year,sem_val:semester_class_val}, method:"POST"
+                        url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{my_usn:usn,year:year,sem_val:semester_class_val}, method:"POST"
                 }).done(function(mm) {
                     if(mm == "null")
                     {
@@ -267,7 +267,7 @@
                 if($.trim(search_libraby).length>0)
                     {
                         $.ajax({
-                                    url: "http://k6nepal.com/hmsit_app/demo.php", data:{search_libraby_key:search_libraby}, method:"POST"
+                                    url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{search_libraby_key:search_libraby}, method:"POST"
                                 }).done(function(found_flag) {
                                     if(found_flag=="1")
                                     {
@@ -283,7 +283,7 @@
 
                         function display_libraby_search(){
                         $.ajax({
-                                    url: "http://k6nepal.com/hmsit_app/demo.php", data:{libraby_search_key:search_libraby}, method:"POST"
+                                    url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{libraby_search_key:search_libraby}, method:"POST"
                                 }).done(function(ls) {
                                     localStorage.setItem('libraby_search',ls);
                                     var f = localStorage.getItem('libraby_search');
@@ -348,7 +348,7 @@
             var t = JSON.parse(f);
             var colg_id = t[0]["cid"];
                $.ajax({
-                            url: "http://k6nepal.com/hmsit_app/demo.php", data:{cid_mybooks:colg_id}, method:"POST"
+                            url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{cid_mybooks:colg_id}, method:"POST"
                             }).done(function(my_books_flag) {
                                 if(my_books_flag=="1")
                                 {
@@ -363,7 +363,7 @@
                             });
                         function display_my_libraby_books(){
                         $.ajax({
-                                    url: "http://k6nepal.com/hmsit_app/demo.php", data:{myBooksearch_key:colg_id}, method:"POST"
+                                    url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{myBooksearch_key:colg_id}, method:"POST"
                                 }).done(function(lb) {
                                     
                                     localStorage.setItem('my_libraby_books',lb);
