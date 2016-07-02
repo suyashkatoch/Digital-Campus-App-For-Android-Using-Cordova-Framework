@@ -39,7 +39,7 @@
                     ).length>0 & $.trim(table_name).length>0 )
                 {
                         $.ajax({
-                                            url: "http://k6nepal.com/hmsit_app/demo.php", data:{fname: fname, lname: lname, pa: pa, la: la, father_name: father_name, mother_name: mother_name, f_m_phone: f_m_phone, ll_phone: ll_phone,own_phone: own_phone, email: email, govt_id: govt_id, branch_val: branch_val, role: role_val,table_name : table_name}, method:"POST" 
+                                            url: "http://your_ip_orwebsite_link/server_files/demo.php", data:{fname: fname, lname: lname, pa: pa, la: la, father_name: father_name, mother_name: mother_name, f_m_phone: f_m_phone, ll_phone: ll_phone,own_phone: own_phone, email: email, govt_id: govt_id, branch_val: branch_val, role: role_val,table_name : table_name}, method:"POST" 
                                         }).done(function(isInfoSaved_flag) {
                                                 if(isInfoSaved_flag == 0) {
                                                     alert("Account Created!");
